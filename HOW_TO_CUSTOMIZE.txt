@@ -1,0 +1,151 @@
+====================================================================
+ DERIV THIRD PARTY TEMPLATE — HOW TO MAKE THIS YOUR OWN APP
+====================================================================
+
+This folder is a white-label Deriv trading app. It is a Node/Express
+server that serves a rebranded Deriv trading-bot frontend (bots,
+charts, dashboard, etc.) under YOUR name, YOUR colors and YOUR own
+Deriv OAuth App ID.
+
+Everything you need to change lives in ONE config file plus THREE
+image files. You do not need to touch any other code.
+
+
+--------------------------------------------------------------------
+STEP 1 — Edit brand.config.js
+--------------------------------------------------------------------
+Open brand.config.js in the root of this folder. Fill in:
+
+  appName          Your app's name, e.g. "APEXTRADE"
+  logoTextMain     First part of the two-tone wordmark, e.g. "APEX"
+  logoTextAccent   Second part, e.g. "TRADE"
+                   (leave logoTextAccent as '' for a plain one-color
+                   wordmark instead of two-tone)
+  tagline          Short line shown under the app name, e.g.
+                   "Smarter Trades, Faster Moves"
+  description       One sentence describing the app (used in page
+                   meta tags / search / social previews)
+
+  derivAppId       Your own Deriv OAuth App ID (see STEP 2 below)
+
+  allowedDomains   List of every domain you will deploy this app to,
+                   e.g. ["apextrade.com", "www.apextrade.com"]
+  primaryDomain    The main one of those domains, e.g. "apextrade.com"
+
+  primaryColor     Your main brand color (hex), e.g. "#0057FF"
+  accentColor      A lighter highlight color used for hover/active
+                   states and the wordmark, e.g. "#5b9dff"
+  secondaryColor   A dark neutral used behind cards/surfaces
+  backgroundColor  The page background color (usually near-black)
+
+  fontFamily       The font used everywhere (UI text + wordmark), e.g. "Poppins"
+  fontGoogleParam  The matching Google Fonts CSS2 "family" query param for
+                   that font (weights included) — see the options listed as
+                   comments right above these two fields in brand.config.js
+
+  referralUrl      (optional) your Deriv affiliate/referral link
+
+Save the file. That's it — every page, the browser tab title, the
+PWA manifest, the loader screen, the header logo text and every
+themed button/tab color in the app all read from this one file.
+
+
+--------------------------------------------------------------------
+STEP 2 — Get your own Deriv App ID
+--------------------------------------------------------------------
+The App ID is what tells Deriv "this is my application" and lets
+users log in through Deriv's OAuth screen into YOUR app instead of
+someone else's.
+
+  1. Go to https://api.deriv.com/dashboard (log in with your Deriv
+     account, or create one).
+  2. Register a new application.
+  3. Set its redirect URL(s) to your domain(s), e.g.
+     https://apextrade.com/
+  4. Copy the "app_id" / "client_id" it gives you.
+  5. Paste it into brand.config.js as `derivAppId`.
+
+Without this step the app will still run, but login will fail (or
+log users into the wrong/default app), because it's still pointed at
+a placeholder ID.
+
+
+--------------------------------------------------------------------
+STEP 3 — Replace the three image files
+--------------------------------------------------------------------
+Go to assets/media/ and replace these files with your own artwork,
+keeping the EXACT same filenames (just overwrite them):
+
+  logo.png       Square logo / app icon. Also used as the small mark
+                 in the header and as the PWA home-screen icon.
+                 Recommended: at least 512x512px, transparent PNG.
+
+  favicon.png    The small icon shown in the browser tab.
+                 Recommended: 256x256px, transparent PNG.
+
+  loader.png     The big image shown on the splash/loading screen
+                 while the app boots. This is the "loader image".
+                 Recommended: a wide image, roughly 16:9, PNG with
+                 a transparent or dark background (it sits on a dark
+                 backdrop).
+
+Optional:
+  og-banner.png  The image shown when your link is shared on social
+                 media / WhatsApp / Twitter (1672x941px recommended).
+
+Do not rename these files or you will also need to update the file
+names inside brand.config.js's comments and manifest.json's icon
+path — easier to just keep the same names.
+
+
+--------------------------------------------------------------------
+STEP 4 — Run it
+--------------------------------------------------------------------
+From this folder, in a terminal:
+
+    npm install
+    npm start
+
+Then open http://localhost:3001 in your browser to preview your
+branded app before deploying.
+
+
+--------------------------------------------------------------------
+STEP 5 — Deploy
+--------------------------------------------------------------------
+This is a plain Node/Express app (see server.js), so it deploys to
+any Node host — Railway, Render, Vercel, a VPS, etc. See HOSTING.txt
+in this same folder for step-by-step instructions for each of those.
+
+Whichever host you use, make sure its domain is added to
+`allowedDomains` in brand.config.js (and matches the redirect URL you
+registered with Deriv in STEP 2) — otherwise the app's domain lock
+will refuse to run there.
+
+
+--------------------------------------------------------------------
+WHAT NOT TO TOUCH
+--------------------------------------------------------------------
+- index.html / manifest.json contain %%TOKEN%% placeholders (like
+  %%APP_NAME%%, %%PRIMARY_COLOR%%) that server.js fills in
+  automatically from brand.config.js on every request. Don't hand-edit
+  these files unless you're comfortable with that templating — just
+  edit brand.config.js instead.
+- The "bots" folder and the free-bot library list in server.js are
+  app content/features, not branding — edit them only if you want to
+  change which trading bots ship with the app.
+- api/site-config.html is a legacy/unused config kept for reference;
+  the live app does not read it.
+
+
+--------------------------------------------------------------------
+QUICK CHECKLIST
+--------------------------------------------------------------------
+[ ] Edited brand.config.js (name, tagline, colors, domains)
+[ ] Registered a Deriv App ID and pasted it into derivAppId
+[ ] Replaced assets/media/logo.png
+[ ] Replaced assets/media/favicon.png
+[ ] Replaced assets/media/loader.png
+[ ] Ran `npm install && npm start` and checked localhost:3001
+[ ] Deployed and added the live domain to allowedDomains
+====================================================================
