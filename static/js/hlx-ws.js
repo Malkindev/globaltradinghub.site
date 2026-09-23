@@ -3,21 +3,17 @@
    Two jobs, both done by intercepting `new WebSocket(url)` before the bundle
    opens its Deriv sockets (this file loads before the app bundle):
 
-   1. COMMISSION — every authenticated trade must run over a socket opened with
-      Global Trading Hub's own Deriv app_id so the app-markup commission accrues to it. The
-      bundle derives the WS app_id by parseInt()-ing the alphanumeric client_id,
-      which yields a wrong numeric ("33"); we rewrite it back to the real app id.
+   1. PUBLIC DATA / CHARTS — anonymous bootstrap traffic is routed to Deriv's
+      documented public WebSocket endpoint with App ID 1089. This prevents the
+      failing public handshake observed on ws.derivws.com.
 
-   2. PUBLIC DATA / CHARTS — Deriv's tick-history socket rejects the alphanumeric
-      client_id for anonymous (logged-out) requests, which is why the Charts /
-      Analysis feeds intermittently fail to render before login. When logged out
-      we use Deriv's public app_id (1089) so public data always streams; once
-      logged in we use the HYPRLVX app id so trades are attributed for markup.
+   2. AUTHENTICATED TRADING — once signed in, the app receives an authenticated
+      WebSocket URL from Deriv's OTP endpoint. Those URLs are connection-specific,
+      so this bridge leaves them untouched.
 
    Also normalises http(s):// → ws(s):// (some in-app webviews throw otherwise).
    ───────────────────────────────────────────────────────────────────────── */
 (function () {
-  var HLX_APP_ID = '34qTQa7RfqxpXXpuMDb1k'; // Global Trading Hub Deriv app (authenticated sockets)
   var PUBLIC_APP_ID = '1089';               // Deriv public app for anonymous data
 
   // `active_loginid` alone is NOT proof of a real session — the app also sets
