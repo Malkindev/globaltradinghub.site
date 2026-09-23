@@ -36,15 +36,45 @@
 
   function fixUrl(u) {
     if (typeof u !== 'string') return u;
-    // scheme normalise
-    if (/^https:\/\//i.test(u)) u = u.replace(/^https:\/\//i, 'wss://');
-    else if (/^http:\/\//i.test(u)) u = u.replace(/^http:\/\//i, 'ws://');
-    // only touch Deriv trading/data sockets
-    if (/websockets\/v3|derivws\.com|binaryws\.com/i.test(u) && /[?&]app_id=/.test(u)) {
-      var want = loggedIn() ? HLX_APP_ID : PUBLIC_APP_ID;
-      u = u.replace(/([?&]app_id=)[^&]+/, '$1' + want);
+
+    try {
+      var url = new URL(u);
+
+      // Anonymous/public bootstrap traffic uses Deriv's documented legacy
+      // public WebSocket endpoint. The current ws.derivws.com edge is returning
+      // HTTP 520 during the browser handshake for this site, which prevents
+      // the app from completing initialization and leaves the custom loader
+      // intentionally parked at 98%.
+      var isDerivSocket = /^(ws\\.)?(derivws\\.com|binaryws\\.com)$/i.test(url.hostname) ||
+        /(^|\\.)derivws\\.com$/i.test(url.hostname) ||
+        /(^|\\.)binaryws\\.com$/i.test(url.hostname);
+
+      if (!isDerivSocket || !url.pathname.includes('/websockets/v3')) return u;
+
+      var authenticated = loggedIn();
+
+      // scheme normalise
+      if (url.protocol === 'http:') url.protocol = 'ws:';
+      if (url.protocol === 'https:') url.protocol = 'wss:';
+
+      if (authenticated) {
+        // Authenticated trading stays on the modern Deriv endpoint and uses
+        // Global Trading Hub's App ID.
+        url.hostname = 'ws.derivws.com';
+        url.searchParams.set('app_id', HLX_APP_ID);
+      } else {
+        // Public market/bootstrap traffic uses the public test App ID on the
+        // legacy public WebSocket endpoint, which is documented by Deriv and
+        // avoids the failing 520 handshake observed on ws.derivws.com.
+        url.hostname = 'ws.binaryws.com';
+        url.searchParams.set('app_id', PUBLIC_APP_ID);
+        url.searchParams.delete('brand');
+      }
+
+      return url.toString();
+    } catch (e) {
+      return u;
     }
-    return u;
   }
 
   try {
