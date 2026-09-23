@@ -19,17 +19,6 @@
       'filter:drop-shadow(0 0 13px rgba(37,211,102,.95))}';
   document.head.appendChild(css);
 
-  // ── Header chat/social icon → WhatsApp (event delegation survives re-renders) ──
-  document.addEventListener('click', function (e) {
-    var t = e.target;
-    if (!t || !t.closest) return;
-    var el = t.closest('.social-icons-btn, [aria-label="Social Media"]');
-    if (el) {
-      e.preventDefault(); e.stopImmediatePropagation();
-      window.open(WHATSAPP, '_blank', 'noopener');
-    }
-  }, true);
-
   // ── Brand-token swap + Analysis-tool title theming ──
   var BRAND_RE = /\b(D[-‑]?Bot|Binary[Tt]ool)\b/g;
   var AUTHOR_RE = /Trader\s*Mike/gi;

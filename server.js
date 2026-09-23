@@ -99,14 +99,19 @@ const HLX_SETTINGS = {
   marketingAccounts: [],
 
   // ── Socials ──
-  socialWhatsapp: '', socialTelegram: '', socialInstagram: '',
-  socialFacebook: '', socialYoutube: '', socialTiktok: '', socialWebsite: '',
+  socialWhatsapp: 'https://whatsapp.com/channel/0029VbDmCLQ5a248r8IuF304',
+  socialTelegram: 'https://t.me/globaltrading_hub1',
+  socialInstagram: '',
+  socialFacebook: '',
+  socialYoutube: '',
+  socialTiktok: 'https://www.tiktok.com/@issa_ke1?_r=1&_t=ZS-99l26xRbSvY',
+  socialWebsite: 'https://globaltradinghub.site',
 
   // ── Tabs (mirror the reference site's feature set) ──
   tabs: [
     { id: 'dashboard',      label: 'Dashboard',      always: true, icon: 'FaHome',      visible: true },
     { id: 'bot_builder',    label: 'Bot Builder',    always: true, icon: 'FaRobot',     visible: true },
-    { id: 'free_bots',      label: 'Free Bots',                    icon: 'FaRobot',     visible: false },
+    { id: 'free_bots',      label: 'Free Bots',                    icon: 'FaRobot',     visible: true },
     { id: 'analysis',       label: 'Analysis',                     icon: 'FaChartLine', visible: true },
     { id: 'dtrader',        label: 'D-Trader',                     icon: 'FaChartBar',  visible: true },
     { id: 'smart_analysis', label: 'Smart Analysis',               icon: 'FaChartLine', visible: true },
@@ -135,10 +140,18 @@ const HLX_SITE = {
   backgroundColor: BRAND.backgroundColor,
   textColor: '#e5e7eb',
   fontFamily: null,
-  socialWhatsapp: '',
-  socialTelegram: '',
+  socialWhatsapp: 'https://whatsapp.com/channel/0029VbDmCLQ5a248r8IuF304',
+  socialTelegram: 'https://t.me/globaltrading_hub1',
+  socialInstagram: '',
+  socialFacebook: '',
+  socialYoutube: '',
+  socialTiktok: 'https://www.tiktok.com/@issa_ke1?_r=1&_t=ZS-99l26xRbSvY',
+  socialWebsite: 'https://globaltradinghub.site',
+  referralUrl: BRAND.referralUrl,
+  website: 'https://globaltradinghub.site',
+  websiteUrl: 'https://globaltradinghub.site',
   tabsConfig: HLX_SETTINGS.tabs,
-  includeFreeBots: false,
+  includeFreeBots: true,
 };
 
 // ─── FREE BOTS LIBRARY ───────────────────────────────────────────────────────

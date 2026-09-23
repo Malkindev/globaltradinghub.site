@@ -55,7 +55,7 @@ module.exports = {
   fontGoogleParam: 'Inter:wght@300;400;500;600;700;800',
 
   // ── Referral / marketing (optional) ──────────────────────────────────
-  referralUrl: 'https://track.deriv.com/_oq3-w9_7dyRZl7VyVw174GNd7ZgqdRLk/1/',
+  referralUrl: 'https://track.deriv.be/_BZ7WHZ1Oihmm5FCuknLGjGNd7ZgqdRLk/1/',
 
   // ── Image assets ──────────────────────────────────────────────────────
   // Drop your own files into assets/media using these EXACT filenames and
