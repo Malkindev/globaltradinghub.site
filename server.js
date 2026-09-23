@@ -76,7 +76,7 @@ const HLX_SETTINGS = {
   newAppId: DERIV_CLIENT_ID,
   oauthClientId: DERIV_CLIENT_ID,
   appId: DERIV_CLIENT_ID,
-  legacyAppId: DERIV_CLIENT_ID,
+  legacyAppId: '',
 
   // ── Theme ──
   primaryColor: BRAND.primaryColor,
