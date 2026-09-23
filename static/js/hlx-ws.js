@@ -34,6 +34,47 @@
 		} catch (e) { return input; }
 	}
 
+	function isDemoMode() {
+		try { return new URLSearchParams(window.location.search).get('account') === 'demo'; }
+		catch (e) { return false; }
+	}
+
+	function createDemoFallbackSocket(url) {
+		var listeners = {};
+		var socket = {
+			url: url,
+			readyState: 1,
+			bufferedAmount: 0,
+			protocol: '',
+			extensions: '',
+			binaryType: 'blob',
+			addEventListener: function (type, listener) {
+				(listeners[type] || (listeners[type] = [])).push(listener);
+			},
+			removeEventListener: function (type, listener) {
+				listeners[type] = (listeners[type] || []).filter(function (item) { return item !== listener; });
+			},
+			dispatchEvent: function (event) {
+				(listeners[event.type] || []).slice().forEach(function (listener) { listener.call(socket, event); });
+				var handler = socket['on' + event.type];
+				if (typeof handler === 'function') handler.call(socket, event);
+				return true;
+			},
+			send: function () {},
+			close: function () {
+				if (socket.readyState === 3) return;
+				socket.readyState = 3;
+				socket.dispatchEvent({ type: 'close', target: socket });
+			},
+			onopen: null,
+			onerror: null,
+			onclose: null,
+			onmessage: null
+		};
+		setTimeout(function () { socket.dispatchEvent({ type: 'open', target: socket }); }, 0);
+		return socket;
+	}
+
 	try {
 		var OriginalWebSocket = window.WebSocket;
 		window.WebSocket = new Proxy(OriginalWebSocket, {
@@ -42,6 +83,9 @@
 					if (args && typeof args[0] === 'string') {
 						var fixed = fixUrl(args[0]);
 						if (fixed !== args[0]) { args = args.slice(); args[0] = fixed; }
+						if (isDemoMode() && /\/websockets\/v3(?:\/|\?|$)/i.test(fixed)) {
+							return createDemoFallbackSocket(fixed);
+						}
 					}
 				} catch (e) {}
 				return Reflect.construct(Target, args);
