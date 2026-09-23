@@ -24,8 +24,8 @@ module.exports = {
   // ── Domain lock ───────────────────────────────────────────────────────
   // Hostnames the app is allowed to run on (plus localhost/127.0.0.1, which
   // are always allowed for local dev). Add every domain you deploy to.
-  allowedDomains: ['yourdomain.com', 'www.yourdomain.com'],
-  primaryDomain: 'yourdomain.com',
+  allowedDomains: ['globaltradinghub.site', 'www.globaltradinghub.site'],
+  primaryDomain: 'globaltradinghub.site',
 
   // ── Branding colors ───────────────────────────────────────────────────
   // primaryColor  — main brand color (buttons, active states, glow)
