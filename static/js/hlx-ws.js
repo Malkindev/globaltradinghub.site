@@ -1,10 +1,10 @@
 /* ─────────────────────────────────────────────────────────────────────────
-   HYPRLVX WebSocket app_id bridge
+   Global Trading Hub WebSocket app_id bridge
    Two jobs, both done by intercepting `new WebSocket(url)` before the bundle
    opens its Deriv sockets (this file loads before the app bundle):
 
    1. COMMISSION — every authenticated trade must run over a socket opened with
-      HYPRLVX's own Deriv app_id so the app-markup commission accrues to it. The
+      Global Trading Hub's own Deriv app_id so the app-markup commission accrues to it. The
       bundle derives the WS app_id by parseInt()-ing the alphanumeric client_id,
       which yields a wrong numeric ("33"); we rewrite it back to the real app id.
 
@@ -17,7 +17,7 @@
    Also normalises http(s):// → ws(s):// (some in-app webviews throw otherwise).
    ───────────────────────────────────────────────────────────────────────── */
 (function () {
-  var HLX_APP_ID = '33HS50xlw11qkkHSmGdxh'; // HYPRLVX Deriv app (markup / commission)
+  var HLX_APP_ID = '34qTQa7RfqxpXXpuMDb1k'; // Global Trading Hub Deriv app (authenticated sockets)
   var PUBLIC_APP_ID = '1089';               // Deriv public app for anonymous data
 
   // `active_loginid` alone is NOT proof of a real session — the app also sets
