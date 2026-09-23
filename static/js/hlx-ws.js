@@ -28,6 +28,7 @@
   // loop that left the boot loader stuck forever.
   function loggedIn() {
     try {
+      if (new URLSearchParams(window.location.search).get('account') === 'demo') return false;
       if (sessionStorage.getItem('auth_info')) return true;
       var a = JSON.parse(localStorage.getItem('client_account_details') || '[]');
       return Array.isArray(a) && a.length > 0;
