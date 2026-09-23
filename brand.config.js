@@ -19,7 +19,7 @@ module.exports = {
   // Register your own app at https://api.deriv.com/dashboard (or your
   // Deriv-account "Manage applications" page) and paste the client_id here.
   // This single value drives newAppId / oauthClientId / appId / legacyAppId.
-  derivAppId: 'PASTE_YOUR_DERIV_APP_ID_HERE',
+  derivAppId: '34qTQa7RfqxpXXpuMDb1k',
 
   // ── Domain lock ───────────────────────────────────────────────────────
   // Hostnames the app is allowed to run on (plus localhost/127.0.0.1, which
