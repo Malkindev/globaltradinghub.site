@@ -5,15 +5,15 @@
 module.exports = {
   // ── Identity ──────────────────────────────────────────────────────────
   // Your app's full name, shown in the browser tab, loader screen and header.
-  appName: 'YOURAPP',
+  appName: 'Global Trading Hub',
   // The loader/header wordmark can be two-tone (e.g. "HYPR" + "LVX").
   // Split your app name across these two — set logoTextAccent to '' for a
   // single solid-color wordmark instead.
-  logoTextMain: 'YOUR',
-  logoTextAccent: 'APP',
+  logoTextMain: 'GLOBAL',
+  logoTextAccent: 'TRADING HUB',
   // Short tagline shown under the app name on the loader and in meta tags.
-  tagline: 'Your Tagline Here',
-  description: 'YOURAPP is an AI-powered automated trading platform on Deriv. Build and run trading bots, scan live markets, and let the AI Copilot suggest and deploy winning strategies.',
+  tagline: 'Smart tools for modern traders',
+  description: 'Global Trading Hub is an automated trading platform on Deriv for building and running trading bots, scanning live markets, and managing strategies.',
 
   // ── Deriv OAuth App ID ───────────────────────────────────────────────
   // Register your own app at https://api.deriv.com/dashboard (or your
@@ -24,8 +24,8 @@ module.exports = {
   // ── Domain lock ───────────────────────────────────────────────────────
   // Hostnames the app is allowed to run on (plus localhost/127.0.0.1, which
   // are always allowed for local dev). Add every domain you deploy to.
-  allowedDomains: ['yourdomain.com', 'www.yourdomain.com'],
-  primaryDomain: 'yourdomain.com',
+  allowedDomains: ['globaltradinghub.site', 'www.globaltradinghub.site'],
+  primaryDomain: 'globaltradinghub.site',
 
   // ── Branding colors ───────────────────────────────────────────────────
   // primaryColor  — main brand color (buttons, active states, glow)

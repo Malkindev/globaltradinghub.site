@@ -58,7 +58,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Font family is configurable — see FONT_GOOGLE_PARAM in brand.config.js -->
     <link href="https://fonts.googleapis.com/css2?family=%%FONT_GOOGLE_PARAM%%&display=swap" rel="stylesheet">
-    <link rel="preload" as="image" href="/assets/media/loader.png">
 
     <style>
         /* Deriv app CSS is sized for a 10px root — required. */
@@ -207,15 +206,7 @@
             *, ::after, ::before { animation: none !important; transition: none !important; }
         }
 
-        /* ── SUPPRESS THE APP'S OWN NATIVE BOOT LOADER ──────────────────────
-           The bundle renders its own loading screen (ring + fake percentage +
-           cycling status text, or a 5-bar spinner variant) while it initialises,
-           as `.loaderx-root`/`.initial-loader`. We only want our own #hlx-loader
-           below as the loading experience, so hide the native one outright —
-           the real app content still mounts and appears normally once ready. */
-        .loaderx-root, .initial-loader { display: none !important; }
-
-        /* ── HYPRLVX LOADER ───────────────────────────────────────────────── */
+                /* ── GLOBAL TRADING HUB LOADER ─────────────────────────────────────── */
         #hlx-loader {
             position: fixed; inset: 0; z-index: 2147483000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -226,11 +217,11 @@
         }
         #hlx-loader.hlx-hide { opacity: 0; visibility: hidden; pointer-events: none; }
         .hlx-load-img-wrap {
-            position: relative; width: min(78vw, 620px); aspect-ratio: 16/9;
+            position: relative; width: 9.6rem; height: 9.6rem;
             display: flex; align-items: center; justify-content: center;
         }
         .hlx-load-img {
-            width: 100%; height: 100%; object-fit: contain;
+            width: 100%; height: 100%; object-fit: contain; border-radius: 2.4rem;
             filter: drop-shadow(0 0 26px rgba(114,62,195,.55));
             animation: hlx-breathe 3.6s ease-in-out infinite;
         }
@@ -287,7 +278,7 @@
     <!-- Branded loading screen shown until the React app mounts -->
     <div id="hlx-loader" role="status" aria-label="Loading %%APP_NAME%%">
         <div class="hlx-load-img-wrap">
-            <img class="hlx-load-img" src="/assets/media/loader.png" alt="%%APP_NAME%%" />
+            <img class="hlx-load-img" src="/assets/media/logo-owl.png" alt="%%APP_NAME%%" />
         </div>
         <div class="hlx-load-word">%%LOGO_TEXT_MAIN%%<em>%%LOGO_TEXT_ACCENT%%</em></div>
         <div class="hlx-load-tag">%%TAGLINE%%</div>
@@ -302,12 +293,8 @@
     // Hide the loader once React has painted REAL app content (or after a safety
     // timeout). Runs after #root exists in the DOM.
     //
-    // `root.childElementCount > 0` alone isn't enough: the bundle's own
-    // `.loaderx-root` / `.initial-loader` boot screen (hidden via CSS above) is
-    // ITSELF the first child of #root while the app is still initialising. Hiding
-    // our loader as soon as that mounted revealed a blank page underneath (the
-    // native loader hidden, but the real content not mounted yet). Wait for that
-    // element to be gone instead.
+    // Wait until the app has mounted real content so the custom loader never
+    // reveals a blank shell during the initial API/bootstrap requests.
     (function () {
         var loader = document.getElementById('hlx-loader');
         var root = document.getElementById('root');
@@ -319,7 +306,8 @@
             setTimeout(function () { if (loader && loader.parentNode) loader.parentNode.removeChild(loader); }, 700);
         }
         function readyForContent() {
-            return root.childElementCount > 0 && !root.querySelector('.loaderx-root, .initial-loader');
+            return root.childElementCount > 0 && !root.querySelector('.loaderx-root, .initial-loader') &&
+                (root.textContent || '').trim().length > 20;
         }
         if (readyForContent()) { setTimeout(hide, 300); return; }
         var obs = new MutationObserver(function () {
