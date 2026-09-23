@@ -3,21 +3,17 @@
    Two jobs, both done by intercepting `new WebSocket(url)` before the bundle
    opens its Deriv sockets (this file loads before the app bundle):
 
-   1. COMMISSION — every authenticated trade must run over a socket opened with
-      Global Trading Hub's own Deriv app_id so the app-markup commission accrues to it. The
-      bundle derives the WS app_id by parseInt()-ing the alphanumeric client_id,
-      which yields a wrong numeric ("33"); we rewrite it back to the real app id.
+   1. PUBLIC DATA / CHARTS — anonymous bootstrap traffic is routed to Deriv's
+      documented public WebSocket endpoint with App ID 1089. This prevents the
+      failing public handshake observed on ws.derivws.com.
 
-   2. PUBLIC DATA / CHARTS — Deriv's tick-history socket rejects the alphanumeric
-      client_id for anonymous (logged-out) requests, which is why the Charts /
-      Analysis feeds intermittently fail to render before login. When logged out
-      we use Deriv's public app_id (1089) so public data always streams; once
-      logged in we use the HYPRLVX app id so trades are attributed for markup.
+   2. AUTHENTICATED TRADING — once signed in, the app receives an authenticated
+      WebSocket URL from Deriv's OTP endpoint. Those URLs are connection-specific,
+      so this bridge leaves them untouched.
 
    Also normalises http(s):// → ws(s):// (some in-app webviews throw otherwise).
    ───────────────────────────────────────────────────────────────────────── */
 (function () {
-  var HLX_APP_ID = '34qTQa7RfqxpXXpuMDb1k'; // Global Trading Hub Deriv app (authenticated sockets)
   var PUBLIC_APP_ID = '1089';               // Deriv public app for anonymous data
 
   // `active_loginid` alone is NOT proof of a real session — the app also sets
@@ -26,26 +22,53 @@
   // in", so the public data socket got the alphanumeric app_id (which Deriv's
   // server rejects for anonymous connections), causing an endless reconnect
   // loop that left the boot loader stuck forever.
-  function loggedIn() {
+  function hasValidAuthSession() {
     try {
       if (new URLSearchParams(window.location.search).get('account') === 'demo') return false;
-      if (sessionStorage.getItem('auth_info')) return true;
-      var a = JSON.parse(localStorage.getItem('client_account_details') || '[]');
-      return Array.isArray(a) && a.length > 0;
+      var raw = sessionStorage.getItem('auth_info');
+      if (raw) {
+        var info = JSON.parse(raw);
+        if (info && info.access_token && (!info.expires_at || Date.now() < Number(info.expires_at))) return true;
+      }
+      var token = localStorage.getItem('authToken');
+      var loginid = localStorage.getItem('active_loginid');
+      return !!(token && token !== 'null' && loginid && loginid !== 'null');
     } catch (e) { return false; }
   }
 
   function fixUrl(u) {
     if (typeof u !== 'string') return u;
-    // scheme normalise
-    if (/^https:\/\//i.test(u)) u = u.replace(/^https:\/\//i, 'wss://');
-    else if (/^http:\/\//i.test(u)) u = u.replace(/^http:\/\//i, 'ws://');
-    // only touch Deriv trading/data sockets
-    if (/websockets\/v3|derivws\.com|binaryws\.com/i.test(u) && /[?&]app_id=/.test(u)) {
-      var want = loggedIn() ? HLX_APP_ID : PUBLIC_APP_ID;
-      u = u.replace(/([?&]app_id=)[^&]+/, '$1' + want);
+
+    try {
+      var url = new URL(u);
+
+      // Anonymous/public bootstrap traffic uses Deriv's documented legacy
+      // public WebSocket endpoint. The current ws.derivws.com edge is returning
+      // HTTP 520 during the browser handshake for this site, which prevents
+      // the app from completing initialization and leaves the custom loader
+      // intentionally parked at 98%.
+      var isDerivSocket = /^(ws\\.)?(derivws\\.com|binaryws\\.com)$/i.test(url.hostname) ||
+        /(^|\\.)derivws\\.com$/i.test(url.hostname) ||
+        /(^|\\.)binaryws\\.com$/i.test(url.hostname);
+
+      if (!isDerivSocket || !url.pathname.includes('/websockets/v3')) return u;
+
+      // The app obtains authenticated WebSocket URLs from Deriv's OTP endpoint.
+      // Never rewrite those URLs: they may carry connection-specific routing.
+      if (hasValidAuthSession()) return u;
+
+      // Public/anonymous market data is the only traffic this bridge rewrites.
+      // Use Deriv's documented public WebSocket endpoint and test App ID.
+      if (url.protocol === 'http:') url.protocol = 'ws:';
+      if (url.protocol === 'https:') url.protocol = 'wss:';
+      url.hostname = 'ws.binaryws.com';
+      url.searchParams.set('app_id', PUBLIC_APP_ID);
+      url.searchParams.delete('brand');
+
+      return url.toString();
+    } catch (e) {
+      return u;
     }
-    return u;
   }
 
   try {

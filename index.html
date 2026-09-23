@@ -22,6 +22,21 @@
     })();
     </script>
 
+    <!-- Clear any previously installed caching service worker before boot. -->
+    <script>
+    (function () {
+        if (!('serviceWorker' in navigator)) return;
+        var key = 'gth_sw_cleanup_v1';
+        if (sessionStorage.getItem(key)) return;
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+            if (!registrations.length) return;
+            sessionStorage.setItem(key, '1');
+            return Promise.all(registrations.map(function (r) { return r.unregister(); }))
+                .then(function () { window.location.reload(); });
+        }).catch(function () {});
+    })();
+    </script>
+
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f)})(window,document,'script','dataLayer','GTM-KV9538TF');</script>
 
