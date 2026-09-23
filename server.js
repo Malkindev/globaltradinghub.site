@@ -106,7 +106,7 @@ const HLX_SETTINGS = {
   tabs: [
     { id: 'dashboard',      label: 'Dashboard',      always: true, icon: 'FaHome',      visible: true },
     { id: 'bot_builder',    label: 'Bot Builder',    always: true, icon: 'FaRobot',     visible: true },
-    { id: 'free_bots',      label: 'Free Bots',                    icon: 'FaRobot',     visible: true },
+    { id: 'free_bots',      label: 'Free Bots',                    icon: 'FaRobot',     visible: false },
     { id: 'analysis',       label: 'Analysis',                     icon: 'FaChartLine', visible: true },
     { id: 'dtrader',        label: 'D-Trader',                     icon: 'FaChartBar',  visible: true },
     { id: 'smart_analysis', label: 'Smart Analysis',               icon: 'FaChartLine', visible: true },
@@ -138,20 +138,14 @@ const HLX_SITE = {
   socialWhatsapp: '',
   socialTelegram: '',
   tabsConfig: HLX_SETTINGS.tabs,
-  includeFreeBots: true,
+  includeFreeBots: false,
 };
 
 // ─── FREE BOTS LIBRARY ───────────────────────────────────────────────────────
 // Served through the same /api/appwrite/bots + /bot-xml contract the bundle
 // expects. `storageFileId` == the bot id so /bot-xml?id= resolves the file.
 const BOT_DIR = path.join(__dirname, 'bots');
-const HLX_BOTS = [
-  { id: 'hyprlvx-pro-ai', file: 'HyprlvxProAI.xml', displayName: 'HYPRLVX Pro AI', description: 'Advanced AI-powered signal engine built exclusively for HYPRLVX', category: 'AI Signal', folderId: 'hyprlvx', folderName: 'HYPRLVX' },
-  { id: 'ximi',           file: 'XIMI.xml',         displayName: 'XIMI',           description: 'Even/Odd digit bot with virtual loss filter and martingale recovery', category: 'Digits', folderId: 'hyprlvx', folderName: 'HYPRLVX' },
-  { id: 'bluebeam',       file: 'BlueBeam.xml',     displayName: 'BlueBeam Pro AI', description: 'Over/Under digit strategy with dual-window market analysis', category: 'Over/Under', folderId: 'hyprlvx', folderName: 'HYPRLVX' },
-  { id: 'dark-owl',       file: 'DarkOwl.xml',      displayName: 'Dark Owl',       description: 'Alternating Under 4 / Over 5 strategy with smart martingale', category: 'Over/Under', folderId: 'hyprlvx', folderName: 'HYPRLVX' },
-  { id: 'black-box-spider', file: 'BlackBoxSpider.xml', displayName: 'Black Box Spider', description: 'Under 4 / Over 5 strategy that waits for 3 consecutive virtual losses before entering a real trade, with TP/SL and 1.8x martingale recovery', category: 'Over/Under', folderId: 'hyprlvx', folderName: 'HYPRLVX' },
-];
+const HLX_BOTS = [];
 const nowIso = new Date().toISOString();
 function botCards() {
   return HLX_BOTS.map(b => ({
@@ -276,12 +270,7 @@ app.get('/api/site-config', (req, res) => {
 });
 
 // Featured bots (used by our own bot-library overlay).
-app.get('/api/featured-bots', (req, res) => res.json({ bots: [
-  { id: 'hyprlvx-pro-ai', name: 'HYPRLVX Pro AI', file: '/bots/HyprlvxProAI.xml', description: 'Advanced AI-powered signal engine built exclusively for HYPRLVX', category: 'AI Signal', badge: 'EXCLUSIVE' },
-  { id: 'ximi', name: 'XIMI', file: '/bots/XIMI.xml', description: 'Even/Odd digit bot with virtual loss filter and martingale recovery', category: 'Digits', badge: 'POPULAR' },
-  { id: 'bluebeam', name: 'BlueBeam Pro AI', file: '/bots/BlueBeam.xml', description: 'Over/Under digit strategy with dual-window market analysis', category: 'Over/Under', badge: 'HOT' },
-  { id: 'dark-owl', name: 'Dark Owl', file: '/bots/DarkOwl.xml', description: 'Alternating Under 4 / Over 5 strategy with smart martingale', category: 'Over/Under', badge: null },
-]}));
+app.get('/api/featured-bots', (req, res) => res.json({ bots: [] }));
 
 // Empty/OK stubs for any other /api/* the bundle probes.
 app.all('/api/*', (req, res) => { jsonCors(res); res.json({ ok: true, data: null, status: 'ok' }); });
