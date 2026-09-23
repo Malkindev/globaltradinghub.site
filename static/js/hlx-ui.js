@@ -9,15 +9,52 @@
    WhatsApp uses document-level event delegation for the same reason.
    ───────────────────────────────────────────────────────────────────────── */
 (function () {
-  var WHATSAPP = 'https://wa.me/254794405454';
-
   var css = document.createElement('style');
   css.textContent =
     '.social-icons-btn,[aria-label="Social Media"]{cursor:pointer !important;' +
       'filter:drop-shadow(0 0 6px rgba(37,211,102,.5));transition:filter .3s,transform .3s}' +
     '.social-icons-btn:hover,[aria-label="Social Media"]:hover{transform:scale(1.08);' +
-      'filter:drop-shadow(0 0 13px rgba(37,211,102,.95))}';
+      'filter:drop-shadow(0 0 13px rgba(37,211,102,.95))}' +
+    '.social-icons-modal__link[data-hlx-link]{text-decoration:none !important}';
   document.head.appendChild(css);
+
+  var extraLinks = null;
+  function loadExtraLinks() {
+    fetch('/api/appwrite/site-settings?hostname=' + encodeURIComponent(window.location.hostname))
+      .then(function (response) { return response.json(); })
+      .then(function (payload) {
+        var site = payload && payload.site || {};
+        var settings = site.settingsJson;
+        if (typeof settings === 'string') {
+          try { settings = JSON.parse(settings); } catch (e) { settings = {}; }
+        }
+        settings = settings || {};
+        extraLinks = [
+          { key: 'referralUrl', label: 'Deriv Affiliate', icon: '↗', href: settings.referralUrl || site.referralUrl },
+          { key: 'socialWebsite', label: 'Global Trading Hub', icon: '◉', href: settings.socialWebsite || site.websiteUrl }
+        ].filter(function (link) { return /^https:\/\//i.test(link.href || ''); });
+        addExtraLinks();
+      })
+      .catch(function () {});
+  }
+
+  function addExtraLinks() {
+    if (!extraLinks) return;
+    var firstLink = document.querySelector('a.social-icons-modal__link');
+    var container = firstLink && firstLink.parentElement;
+    if (!container) return;
+    extraLinks.forEach(function (link) {
+      if (container.querySelector('[data-hlx-link="' + link.key + '"]')) return;
+      var anchor = document.createElement('a');
+      anchor.className = 'social-icons-modal__link';
+      anchor.dataset.hlxLink = link.key;
+      anchor.href = link.href;
+      anchor.target = '_blank';
+      anchor.rel = 'noopener noreferrer';
+      anchor.innerHTML = '<span aria-hidden="true">' + link.icon + '</span><span>' + link.label + '</span>';
+      container.appendChild(anchor);
+    });
+  }
 
   // ── Brand-token swap + Analysis-tool title theming ──
   var BRAND_RE = /\b(D[-‑]?Bot|Binary[Tt]ool)\b/g;
@@ -47,6 +84,7 @@
   function start() {
     run();
     new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true, characterData: true });
+    loadExtraLinks();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
