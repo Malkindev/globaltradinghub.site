@@ -79,7 +79,7 @@
   }
 
   var scheduled = false;
-  function run() { scheduled = false; try { rewrite(); } catch (e) {} }
+  function run() { scheduled = false; try { rewrite(); addExtraLinks(); } catch (e) {} }
   function schedule() { if (!scheduled) { scheduled = true; requestAnimationFrame(run); } }
   function start() {
     run();
