@@ -47,9 +47,9 @@
       // HTTP 520 during the browser handshake for this site, which prevents
       // the app from completing initialization and leaves the custom loader
       // intentionally parked at 98%.
-      var isDerivSocket = /^(ws\\.)?(derivws\\.com|binaryws\\.com)$/i.test(url.hostname) ||
-        /(^|\\.)derivws\\.com$/i.test(url.hostname) ||
-        /(^|\\.)binaryws\\.com$/i.test(url.hostname);
+      var isDerivSocket = /^(ws\.)?(derivws\.com|binaryws\.com)$/i.test(url.hostname) ||
+        /(^|\.)derivws\.com$/i.test(url.hostname) ||
+        /(^|\.)binaryws\.com$/i.test(url.hostname);
 
       if (!isDerivSocket || !url.pathname.includes('/websockets/v3')) return u;
 
