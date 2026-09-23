@@ -26,11 +26,16 @@
   // in", so the public data socket got the alphanumeric app_id (which Deriv's
   // server rejects for anonymous connections), causing an endless reconnect
   // loop that left the boot loader stuck forever.
-  function loggedIn() {
+  function hasValidAuthSession() {
     try {
-      if (sessionStorage.getItem('auth_info')) return true;
-      var a = JSON.parse(localStorage.getItem('client_account_details') || '[]');
-      return Array.isArray(a) && a.length > 0;
+      var raw = sessionStorage.getItem('auth_info');
+      if (raw) {
+        var info = JSON.parse(raw);
+        if (info && info.access_token && (!info.expires_at || Date.now() < Number(info.expires_at))) return true;
+      }
+      var token = localStorage.getItem('authToken');
+      var loginid = localStorage.getItem('active_loginid');
+      return !!(token && token !== 'null' && loginid && loginid !== 'null');
     } catch (e) { return false; }
   }
 
@@ -51,25 +56,17 @@
 
       if (!isDerivSocket || !url.pathname.includes('/websockets/v3')) return u;
 
-      var authenticated = loggedIn();
+      // The app obtains authenticated WebSocket URLs from Deriv's OTP endpoint.
+      // Never rewrite those URLs: they may carry connection-specific routing.
+      if (hasValidAuthSession()) return u;
 
-      // scheme normalise
+      // Public/anonymous market data is the only traffic this bridge rewrites.
+      // Use Deriv's documented public WebSocket endpoint and test App ID.
       if (url.protocol === 'http:') url.protocol = 'ws:';
       if (url.protocol === 'https:') url.protocol = 'wss:';
-
-      if (authenticated) {
-        // Authenticated trading stays on the modern Deriv endpoint and uses
-        // Global Trading Hub's App ID.
-        url.hostname = 'ws.derivws.com';
-        url.searchParams.set('app_id', HLX_APP_ID);
-      } else {
-        // Public market/bootstrap traffic uses the public test App ID on the
-        // legacy public WebSocket endpoint, which is documented by Deriv and
-        // avoids the failing 520 handshake observed on ws.derivws.com.
-        url.hostname = 'ws.binaryws.com';
-        url.searchParams.set('app_id', PUBLIC_APP_ID);
-        url.searchParams.delete('brand');
-      }
+      url.hostname = 'ws.binaryws.com';
+      url.searchParams.set('app_id', PUBLIC_APP_ID);
+      url.searchParams.delete('brand');
 
       return url.toString();
     } catch (e) {
