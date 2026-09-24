@@ -33,8 +33,8 @@
 			if (!isDerivSocket || !/\\/websockets\\/v3(?:\\/|$)/i.test(url.pathname)) return input;
 
 			url.protocol = 'wss:';
-			url.hostname = 'ws.derivws.com';
-			if (!hasValidAuthSession()) url.searchParams.set('app_id', PUBLIC_APP_ID);
+			url.hostname = 'ws.binaryws.com';
+			url.searchParams.set('app_id', PUBLIC_APP_ID);
 			return url.toString();
 		} catch (e) { return input; }
 	}
