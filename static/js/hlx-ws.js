@@ -1,7 +1,12 @@
 /* Global Trading Hub Deriv WebSocket compatibility bridge.
  * Anonymous bootstrap uses the public numeric app ID. Authenticated API-token
  * and OAuth sessions retain the app ID supplied by the application.
- */
+ *
+ * Demo mode has a local bootstrap socket because the legacy public WebSocket can
+ * return an HTTP 520 handshake on some browser/network paths. The bootstrap
+ * socket must answer the requests used by API initialization; a socket that only
+ * reports "open" but never responds leaves api_base.init() waiting forever.
+ */ 
 (function () {
 	var PUBLIC_APP_ID = '1089';
 
@@ -23,9 +28,9 @@
 		if (typeof input !== 'string') return input;
 		try {
 			var url = new URL(input);
-			var isDerivSocket = /(^|\.)derivws\.com$/i.test(url.hostname) ||
-				/(^|\.)binaryws\.com$/i.test(url.hostname);
-			if (!isDerivSocket || !/\/websockets\/v3(?:\/|$)/i.test(url.pathname)) return input;
+			var isDerivSocket = /(^|\\.)derivws\\.com$/i.test(url.hostname) ||
+				/(^|\\.)binaryws\\.com$/i.test(url.hostname);
+			if (!isDerivSocket || !/\\/websockets\\/v3(?:\\/|$)/i.test(url.pathname)) return input;
 
 			url.protocol = 'wss:';
 			url.hostname = 'ws.derivws.com';
@@ -37,6 +42,64 @@
 	function isDemoMode() {
 		try { return new URLSearchParams(window.location.search).get('account') === 'demo'; }
 		catch (e) { return false; }
+	}
+
+	function bootstrapSymbols() {
+		return [
+			{symbol:'1HZ10V', display_name:'Volatility 10 (1s) Index', symbol_type:'synthetic_index', pip:2, pip_size:2},
+			{symbol:'R_10', display_name:'Volatility 10 Index', symbol_type:'synthetic_index', pip:3, pip_size:3},
+			{symbol:'1HZ25V', display_name:'Volatility 25 (1s) Index', symbol_type:'synthetic_index', pip:2, pip_size:2},
+			{symbol:'R_25', display_name:'Volatility 25 Index', symbol_type:'synthetic_index', pip:3, pip_size:3},
+			{symbol:'1HZ50V', display_name:'Volatility 50 (1s) Index', symbol_type:'synthetic_index', pip:2, pip_size:2},
+			{symbol:'R_50', display_name:'Volatility 50 Index', symbol_type:'synthetic_index', pip:3, pip_size:3},
+			{symbol:'1HZ75V', display_name:'Volatility 75 (1s) Index', symbol_type:'synthetic_index', pip:2, pip_size:2},
+			{symbol:'R_75', display_name:'Volatility 75 Index', symbol_type:'synthetic_index', pip:4, pip_size:4},
+			{symbol:'1HZ100V', display_name:'Volatility 100 (1s) Index', symbol_type:'synthetic_index', pip:2, pip_size:2},
+			{symbol:'R_100', display_name:'Volatility 100 Index', symbol_type:'synthetic_index', pip:2, pip_size:2}
+		];
+	}
+
+	function mockResponse(request) {
+		var req = request && typeof request === 'object' ? request : {};
+		var base = { echo_req: req };
+		if (req.req_id !== undefined) base.req_id = req.req_id;
+
+		if (req.active_symbols) {
+			base.msg_type = 'active_symbols';
+			base.active_symbols = bootstrapSymbols();
+			return base;
+		}
+		if (req.time) {
+			base.msg_type = 'time';
+			base.time = Math.floor(Date.now() / 1000);
+			return base;
+		}
+		if (req.ping) {
+			base.msg_type = 'ping';
+			base.ping = 'pong';
+			return base;
+		}
+		if (req.get_settings) {
+			base.msg_type = 'get_settings';
+			base.get_settings = {country_code:'ke'};
+			return base;
+		}
+		if (req.landing_company) {
+			base.msg_type = 'landing_company';
+			base.landing_company = {name:req.landing_company};
+			return base;
+		}
+		if (req.get_account_status) {
+			base.msg_type = 'get_account_status';
+			base.get_account_status = {};
+			return base;
+		}
+		if (req.website_status) {
+			base.msg_type = 'website_status';
+			base.website_status = {site_status:'up'};
+			return base;
+		}
+		return null;
 	}
 
 	function createDemoFallbackSocket(url) {
@@ -60,7 +123,15 @@
 				if (typeof handler === 'function') handler.call(socket, event);
 				return true;
 			},
-			send: function () {},
+			send: function (data) {
+				var request = data;
+				try { if (typeof request === 'string') request = JSON.parse(request); } catch (e) { request = {}; }
+				var response = mockResponse(request);
+				if (!response) return;
+				setTimeout(function () {
+					socket.dispatchEvent({ type: 'message', data: JSON.stringify(response), target: socket });
+				}, 0);
+			},
 			close: function () {
 				if (socket.readyState === 3) return;
 				socket.readyState = 3;
@@ -83,7 +154,7 @@
 					if (args && typeof args[0] === 'string') {
 						var fixed = fixUrl(args[0]);
 						if (fixed !== args[0]) { args = args.slice(); args[0] = fixed; }
-						if (isDemoMode() && /\/websockets\/v3(?:\/|\?|$)/i.test(fixed)) {
+						if (isDemoMode() && /\\/websockets\\/v3(?:\\/|\\?|$)/i.test(fixed)) {
 							return createDemoFallbackSocket(fixed);
 						}
 					}
