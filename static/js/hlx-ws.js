@@ -28,9 +28,9 @@
 		if (typeof input !== 'string') return input;
 		try {
 			var url = new URL(input);
-			var isDerivSocket = /(^|\\.)derivws\\.com$/i.test(url.hostname) ||
-				/(^|\\.)binaryws\\.com$/i.test(url.hostname);
-			if (!isDerivSocket || !/\\/websockets\\/v3(?:\\/|$)/i.test(url.pathname)) return input;
+			var isDerivSocket = /(^|\.)derivws\.com$/i.test(url.hostname) ||
+				/(^|\.)binaryws\.com$/i.test(url.hostname);
+			if (!isDerivSocket || !/\/websockets\/v3(?:\/|$)/i.test(url.pathname)) return input;
 
 			url.protocol = 'wss:';
 			url.hostname = 'ws.binaryws.com';
@@ -154,7 +154,7 @@
 					if (args && typeof args[0] === 'string') {
 						var fixed = fixUrl(args[0]);
 						if (fixed !== args[0]) { args = args.slice(); args[0] = fixed; }
-						if (isDemoMode() && /\\/websockets\\/v3(?:\\/|\\?|$)/i.test(fixed)) {
+						if (isDemoMode() && /\/websockets\/v3(?:\/|\\?|$)/i.test(fixed)) {
 							return createDemoFallbackSocket(fixed);
 						}
 					}
