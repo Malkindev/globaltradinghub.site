@@ -29,8 +29,8 @@
     if (typeof input !== 'string') return false;
     try {
       var url = new URL(input);
-      return /(^|\\.)derivws\\.com$/i.test(url.hostname) &&
-        /\\/websockets\\/v3(?:\\/|$)/i.test(url.pathname);
+      return /(^|\.)derivws\.com$/i.test(url.hostname) &&
+        /\/websockets\/v3(?:\/|$)/i.test(url.pathname);
     } catch (e) {
       return false;
     }
