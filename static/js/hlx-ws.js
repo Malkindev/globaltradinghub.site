@@ -1,40 +1,40 @@
 /* Global Trading Hub WebSocket compatibility bridge.
- * Anonymous bootstrap uses Deriv's documented public v3 WebSocket endpoint
- * without the old app_id=1089/brand query that is producing HTTP 520 here.
- * Authenticated sockets are left untouched.
+ * Keep the app on Deriv's official legacy v3 WebSocket endpoint.
+ * The previous bridge was stripping app_id and forcing ws.binaryws.com,
+ * which produced the exact 520 handshake error seen in the browser.
  */
 (function () {
-	function hasValidAuthSession() {
+	var FALLBACK_LEGACY_APP_ID = '65555';
+
+	function isDerivV3(input) {
+		if (typeof input !== 'string') return false;
 		try {
-			var raw = sessionStorage.getItem('auth_info');
-			if (raw) {
-				var info = JSON.parse(raw);
-				if (info && info.access_token && (!info.expires_at || Date.now() < Number(info.expires_at))) return true;
-			}
-			var token = localStorage.getItem('authToken');
-			var loginid = localStorage.getItem('active_loginid');
-			return !!(token && token !== 'null' && loginid && loginid !== 'null');
-		} catch (e) { return false; }
+			var url = new URL(input);
+			return /(^|\.)derivws\.com$/i.test(url.hostname) &&
+				/\/websockets\/v3(?:\/|$)/i.test(url.pathname);
+		} catch (e) {
+			return false;
+		}
 	}
 
 	function fixUrl(input) {
-		if (typeof input !== 'string') return input;
+		if (!isDerivV3(input)) return input;
 		try {
 			var url = new URL(input);
-			var isDerivSocket =
-				/(^|\.)derivws\.com$/i.test(url.hostname) ||
-				/(^|\.)binaryws\.com$/i.test(url.hostname);
-			if (!isDerivSocket || !/\/websockets\/v3(?:\/|$)/i.test(url.pathname)) return input;
-
 			url.protocol = 'wss:';
-			url.hostname = 'ws.binaryws.com';
+			url.hostname = 'ws.derivws.com';
 
-			if (!hasValidAuthSession()) {
-				url.searchParams.delete('app_id');
-				url.searchParams.delete('brand');
+			// Never remove the app_id: the v3 endpoint expects the application
+			// identifier. Preserve a valid existing numeric id, otherwise use
+			// the production legacy id configured for this project.
+			var appId = String(url.searchParams.get('app_id') || '').trim();
+			if (!/^\d+$/.test(appId) || Number(appId) <= 0) {
+				url.searchParams.set('app_id', FALLBACK_LEGACY_APP_ID);
 			}
 			return url.toString();
-		} catch (e) { return input; }
+		} catch (e) {
+			return input;
+		}
 	}
 
 	try {
