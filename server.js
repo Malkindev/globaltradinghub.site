@@ -76,7 +76,7 @@ const HLX_SETTINGS = {
   newAppId: DERIV_CLIENT_ID,
   oauthClientId: DERIV_CLIENT_ID,
   appId: DERIV_CLIENT_ID,
-  legacyAppId: '',
+  legacyAppId: '65555',
 
   // ── Theme ──
   primaryColor: BRAND.primaryColor,
@@ -131,6 +131,7 @@ const HLX_SITE = {
   settingsJson: JSON.stringify(HLX_SETTINGS),
   suspended: false,
   appId: DERIV_CLIENT_ID,
+  legacyAppId: '65555',
   brandName: BRAND.appName,
   logoUrl: '/assets/media/logo.png',
   faviconUrl: '/assets/media/favicon.png',
