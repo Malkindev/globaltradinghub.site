@@ -83,40 +83,19 @@ const HLX_SETTINGS = {
   appId: DERIV_CLIENT_ID,
   legacyAppId: '65555',
 
-  // ── Theme (matching autotrades.site design) ──
+  // ── Theme ──
   primaryColor: BRAND.primaryColor,
   secondaryColor: BRAND.secondaryColor,
-  accentColor: BRAND.accentColor,
-  backgroundColor: BRAND.backgroundColor,
-
-  // ── Tab navigation style: pills (identical to autotrades.site) ──
-  tabNavigationStyle: 'pills',
-  tabPillsContainerBg: '#ffffff',
-  tabPillsContainerBorder: '#e2e8f0',
-  tabPillsBg: '#ffffff',
-  tabPillsHoverBg: '#f1f5f9',
-  tabPillsActiveBg: '#e0f2fe',
-  tabPillsTextColor: '#475569',
-  tabPillsActiveTextColor: '#0284c7',
-  tabActiveIndicatorColor: 'transparent',
-  tabListBackground: '#064e72',
-  tabActiveColor: '#0f2a5a',
-  tabIconSize: '18',
-  tabTextColor: '#475569',
-  tabIconColor: '#64748b',
-
-  // ── Buttons & Elements ──
-  buttonPrimaryColor: '#0f2a5a',
+  tabActiveColor: BRAND.accentColor,
+  buttonPrimaryColor: BRAND.primaryColor,
   buttonLoginColor: '#ffffff',
-  botLoadButtonColor: '#0f2a5a',
-  botLoadButtonTextColor: '#ffffff',
-  loaderPrimaryColor: '#0f2a5a',
-  loaderSecondaryColor: '#064e72',
-  loaderBackgroundColor: '#ffffff',
+  loaderPrimaryColor: BRAND.primaryColor,
+  loaderSecondaryColor: BRAND.accentColor,
+  loaderBackgroundColor: BRAND.backgroundColor,
   loaderStyle: 'orbit_terminal',
   botCardStyle: 'minimal',
-  listItemBackgroundGradient: 'linear-gradient(135deg, #0f2a5a 0%, #1e3a8a 60%, #064e72 100%)',
-  listItemHoverGradient: 'linear-gradient(135deg, #1e3a8a 0%, #0f2a5a 70%, #064e72 100%)',
+  listItemBackgroundGradient: `linear-gradient(135deg, #0f2a5a 0%, ${BRAND.primaryColor} 60%, ${BRAND.accentColor} 100%)`,
+  listItemHoverGradient: `linear-gradient(135deg, #1a3c60 0%, ${BRAND.primaryColor} 70%, ${BRAND.accentColor} 100%)`,
 
   // ── Referral / marketing ──
   referralUrl: BRAND.referralUrl,
@@ -337,16 +316,16 @@ app.get('/api/site-config', (req, res) => {
 app.get('/api/featured-bots', (req, res) => res.json({ bots: [] }));
 
 // Empty/OK stubs for any other /api/* the bundle probes.
-app.all(/^\/api\/.*$/, (req, res) => { jsonCors(res); res.json({ ok: true, data: null, status: 'ok' }); });
+app.all('/api/*', (req, res) => { jsonCors(res); res.json({ ok: true, data: null, status: 'ok' }); });
 
 // Missing static assets must 404 cleanly (never fall through to the SPA HTML) so
 // webpack's chunk loader degrades gracefully instead of trying to parse HTML as JS.
-app.get([/^\/static\/.*$/, /^\/assets\/.*$/, /^\/translations\/.*$/, /^\/loaders\/.*$/], (req, res) => {
+app.get(['/static/*', '/assets/*', '/translations/*', '/loaders/*'], (req, res) => {
   res.status(404).type('text/plain').send('Not found');
 });
 
 // ─── SPA FALLBACK ────────────────────────────────────────────────────────────
-app.get(/^\/.*$/, (req, res) => {
+app.get('*', (req, res) => {
   noCache(res);
   res.type('html').send(renderTemplate(path.join(__dirname, 'index.html')));
 });
