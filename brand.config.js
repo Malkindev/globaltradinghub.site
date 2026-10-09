@@ -14,8 +14,8 @@ module.exports = {
   derivAppId: '34qTQa7RfqxpXXpuMDb1k',
 
   // ── Domain lock ───────────────────────────────────────────────────────
-  allowedDomains: ['globaltradinghub.site', 'www.globaltradinghub.site', 'globaltradinghubsite.vercel.app'],
-  primaryDomain: 'globaltradinghub.site',
+  allowedDomains: [],
+  primaryDomain: '',
 
   // ── Branding colors (matching autotrades.site design) ───────────────────
   primaryColor: '#3b82f6',
