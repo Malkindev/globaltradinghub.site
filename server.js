@@ -33,9 +33,14 @@ const TOKENS = {
   '%%FONT_FAMILY%%': `'${BRAND.fontFamily}'`,
   '%%FONT_GOOGLE_PARAM%%': BRAND.fontGoogleParam,
 };
-function renderTemplate(filePath) {
+function renderTemplate(filePath, hostname) {
   let s = fs.readFileSync(filePath, 'utf8');
-  for (const [token, value] of Object.entries(TOKENS)) s = s.split(token).join(value);
+  const tokens = {
+    ...TOKENS,
+    '%%PRIMARY_DOMAIN%%': String(hostname || BRAND.primaryDomain || '').replace(/^www\\./, ''),
+    '%%ALLOWED_DOMAINS_JSON%%': '[]',
+  };
+  for (const [token, value] of Object.entries(tokens)) s = s.split(token).join(value);
   return s;
 }
 
@@ -182,14 +187,20 @@ function jsonCors(res) {
 
 app.get('/api/appwrite/site-settings', (req, res) => {
   jsonCors(res); noCache(res);
-  res.json({ ok: true, hostname: req.query.hostname || BRAND.primaryDomain, site: HLX_SITE });
+  const hostname = String(req.query.hostname || req.hostname || '').replace(/^www\\./, '');
+  const site = { ...HLX_SITE, domains: hostname ? [hostname, 'www.' + hostname] : [], domainList: hostname,
+    socialWebsite: req.protocol + '://' + req.get('host'),
+    website: req.protocol + '://' + req.get('host'),
+    websiteUrl: req.protocol + '://' + req.get('host'),
+    settingsJson: JSON.stringify({ ...HLX_SETTINGS, socialWebsite: req.protocol + '://' + req.get('host') }) };
+  res.json({ ok: true, hostname, site });
 });
 
 app.get('/api/appwrite/site-entitlement', (req, res) => {
   jsonCors(res); noCache(res);
   res.json({ ok: true, entitlement: {
     allowed: true, status: 'active', reason: 'ok',
-    hostname: req.query.hostname || BRAND.primaryDomain,
+    hostname: req.query.hostname || req.hostname,
     siteId: HLX_SITE.$id, siteName: BRAND.appName, ownerId: HLX_SITE.$id, hasSiteToken: false,
   }});
 });
@@ -247,10 +258,10 @@ app.post('/api/oauth/token', express.json(), async (req, res) => {
 // ─── HTML SHELL + STATIC ─────────────────────────────────────────────────────
 app.get('/', (req, res) => {
   noCache(res);
-  res.type('html').send(renderTemplate(path.join(__dirname, 'index.html')));
+  res.type('html').send(renderTemplate(path.join(__dirname, 'index.html'), req.hostname));
 });
 app.get('/manifest.json', (req, res) => {
-  res.type('json').send(renderTemplate(path.join(__dirname, 'manifest.json')));
+  res.type('json').send(renderTemplate(path.join(__dirname, 'manifest.json'), req.hostname));
 });
 
 // Minimal no-op service worker: the build registers a SW for PWA support, but we
