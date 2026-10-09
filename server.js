@@ -164,7 +164,18 @@ const HLX_SITE = {
 // Served through the same /api/appwrite/bots + /bot-xml contract the bundle
 // expects. `storageFileId` == the bot id so /bot-xml?id= resolves the file.
 const BOT_DIR = path.join(__dirname, 'bots');
-const HLX_BOTS = [];
+// Seed one downloadable starter strategy in the Free Bots library.
+const HLX_BOTS = [
+  {
+    id: 'gth-digit-over-1-1hz10v',
+    file: 'digit-over-1-1hz10v.xml',
+    displayName: 'Quick Digit Over 1',
+    description: 'A fixed-stake, 1-tick Digit Over strategy for the 1HZ10V Volatility 10 (1s) Index. Default stake: 0.35. No martingale; stop the bot manually and test on demo first.',
+    folderId: 'free-bots',
+    folderName: 'Free Bots',
+    category: 'Digits',
+  },
+];
 const nowIso = new Date().toISOString();
 function botCards() {
   return HLX_BOTS.map(b => ({
