@@ -4,65 +4,29 @@
 // ─────────────────────────────────────────────────────────────────────────
 module.exports = {
   // ── Identity ──────────────────────────────────────────────────────────
-  // Your app's full name, shown in the browser tab, loader screen and header.
   appName: 'Global Trading Hub',
-  // The loader/header wordmark can be two-tone (e.g. "HYPR" + "LVX").
-  // Split your app name across these two — set logoTextAccent to '' for a
-  // single solid-color wordmark instead.
   logoTextMain: 'GLOBAL',
   logoTextAccent: 'TRADING HUB',
-  // Short tagline shown under the app name on the loader and in meta tags.
-  tagline: 'Smart tools for modern traders',
-  description: 'Global Trading Hub is an automated trading platform on Deriv for building and running trading bots, scanning live markets, and managing strategies.',
+  tagline: 'Automate Your Trades',
+  description: 'Build and run automated trading strategies on Global Trading Hub — bot builder, charts, and Deriv integration.',
 
   // ── Deriv OAuth App ID ───────────────────────────────────────────────
-  // Register your own app at https://api.deriv.com/dashboard (or your
-  // Deriv-account "Manage applications" page) and paste the client_id here.
-  // This single value drives newAppId / oauthClientId / appId / legacyAppId.
   derivAppId: '34qTQa7RfqxpXXpuMDb1k',
 
   // ── Domain lock ───────────────────────────────────────────────────────
-  // Hostnames the app is allowed to run on (plus localhost/127.0.0.1, which
-  // are always allowed for local dev). Add every domain you deploy to.
-  allowedDomains: ['globaltradinghub.site', 'www.globaltradinghub.site'],
+  allowedDomains: ['globaltradinghub.site', 'www.globaltradinghub.site', 'globaltradinghubsite.vercel.app'],
   primaryDomain: 'globaltradinghub.site',
 
-  // ── Branding colors ───────────────────────────────────────────────────
-  // primaryColor  — main brand color (buttons, active states, glow)
-  // accentColor   — lighter highlight tone (hover states, active tab, wordmark)
-  // secondaryColor— dark neutral used behind cards/surfaces
-  // backgroundColor — page background (usually near-black)
-  primaryColor: '#723EC3',
-  accentColor: '#9d6ef0',
-  secondaryColor: '#0b0f19',
-  backgroundColor: '#0a0713',
+  // ── Branding colors (matching autotrades.site design) ───────────────────
+  primaryColor: '#3b82f6',
+  accentColor: '#1d4ed8',
+  secondaryColor: '#f5f7fa',
+  backgroundColor: '#ffffff',
 
-  // ── Font ──────────────────────────────────────────────────────────────
-  // fontFamily is the CSS font name used everywhere (UI text + wordmark).
-  // fontGoogleParam is the matching Google Fonts CSS2 API "family" query
-  // param (weights included) — must load the same font fontFamily names.
-  // Change both together. Some options:
-  //   Inter            -> 'Inter:wght@300;400;500;600;700;800'
-  //   Poppins          -> 'Poppins:wght@300;400;500;600;700;800'
-  //   Sora             -> 'Sora:wght@300;400;500;600;700;800'
-  //   Space Grotesk    -> 'Space+Grotesk:wght@300;400;500;600;700'
-  //   IBM Plex Sans    -> 'IBM+Plex+Sans:wght@300;400;500;600;700'
-  //   Orbitron         -> 'Orbitron:wght@400;500;600;700;800;900'
-  //   JetBrains Mono   -> 'JetBrains+Mono:wght@300;400;500;600;700'
-  //   Playfair Display -> 'Playfair+Display:wght@400;500;600;700;800'
-  //   Pirata One       -> 'Pirata+One'
-  fontFamily: 'Inter',
-  fontGoogleParam: 'Inter:wght@300;400;500;600;700;800',
+  // ── Font (matching autotrades.site) ───────────────────────────────────
+  fontFamily: 'IBM Plex Sans',
+  fontGoogleParam: 'IBM+Plex+Sans:wght@300;400;500;600;700',
 
   // ── Referral / marketing (optional) ──────────────────────────────────
   referralUrl: 'https://track.deriv.be/_BZ7WHZ1Oihmm5FCuknLGjGNd7ZgqdRLk/1/',
-
-  // ── Image assets ──────────────────────────────────────────────────────
-  // Drop your own files into assets/media using these EXACT filenames and
-  // nothing else needs to change:
-  //   assets/media/logo.png     — square logo / app icon (also used as the
-  //                               header mark and PWA icon)
-  //   assets/media/favicon.png  — browser tab icon
-  //   assets/media/loader.png   — big splash/loader image shown on boot
-  //   assets/media/og-banner.png— social share preview image (1672x941)
 };
