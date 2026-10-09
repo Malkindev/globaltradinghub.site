@@ -150,7 +150,7 @@
 
         var fileMatch = url.match(FILE_VIEW_RE);
         if (fileMatch && fileMatch[1] && LOCAL_BOT_IDS.indexOf(decodeURIComponent(fileMatch[1])) !== -1) {
-          return origFetch('/api/appwrite/bot-xml?id=' + encodeURIComponent(decodeURIComponent(fileMatch[1])), init);
+          return origFetch('/bots/digit-over-1-1hz10v.xml', init);
         }
       }
     } catch (e) {
