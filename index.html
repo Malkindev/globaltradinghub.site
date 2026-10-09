@@ -1,24 +1,7 @@
 <!doctype html>
 <html lang="en" dir="auto" class="theme--light">
 <head>
-    <!-- Domain lock -->
-    <script>
-    (function () {
-        var ALLOWED = %%ALLOWED_DOMAINS_JSON%%.concat(['localhost', '127.0.0.1']);
-        var host = window.location.hostname;
-        if (ALLOWED.indexOf(host) !== -1) return;
-        document.documentElement.innerHTML =
-            '<head><meta charset="UTF-8"><title>%%APP_NAME%%</title></head>' +
-            '<body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;' +
-            'background:%%BACKGROUND_COLOR%%;color:#0f2a5a;font-family:sans-serif;text-align:center;padding:24px;">' +
-            '<div><h1 style="color:%%PRIMARY_COLOR%%;">%%APP_NAME%%</h1>' +
-            '<p>This application only runs at <a href="https://%%PRIMARY_DOMAIN%%/" style="color:%%PRIMARY_COLOR%%;">%%PRIMARY_DOMAIN%%</a>.</p></div>' +
-            '</body>';
-        try { window.stop(); } catch (e) {}
-        throw new Error('%%APP_NAME%%: blocked on unauthorized host ' + host);
-    })();
-    </script>
-
+    <!-- Domain-agnostic hosting: allow the app to run on any configured domain. -->
     <!-- Clear any previously installed caching service worker before boot. -->
     <script>
     (function () {
