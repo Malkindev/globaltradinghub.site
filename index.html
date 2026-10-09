@@ -1,10 +1,7 @@
 <!doctype html>
 <html lang="en" dir="auto" class="theme--light">
 <head>
-    <!-- HYPRLVX domain lock — halts app init on any host other than the real
-         site, so a copy-pasted clone shows a message instead of the trading UI.
-         Not a security boundary (trivially stripped) — the real backstop is that
-         Deriv only allows OAuth redirects to the registered hyprlvx.xyz URLs. -->
+    <!-- Domain lock -->
     <script>
     (function () {
         var ALLOWED = %%ALLOWED_DOMAINS_JSON%%.concat(['localhost', '127.0.0.1']);
@@ -13,8 +10,8 @@
         document.documentElement.innerHTML =
             '<head><meta charset="UTF-8"><title>%%APP_NAME%%</title></head>' +
             '<body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;' +
-            'background:%%BACKGROUND_COLOR%%;color:#e5e7eb;font-family:sans-serif;text-align:center;padding:24px;">' +
-            '<div><h1 style="color:%%ACCENT_COLOR%%;">%%APP_NAME%%</h1>' +
+            'background:%%BACKGROUND_COLOR%%;color:#0f2a5a;font-family:sans-serif;text-align:center;padding:24px;">' +
+            '<div><h1 style="color:%%PRIMARY_COLOR%%;">%%APP_NAME%%</h1>' +
             '<p>This application only runs at <a href="https://%%PRIMARY_DOMAIN%%/" style="color:%%PRIMARY_COLOR%%;">%%PRIMARY_DOMAIN%%</a>.</p></div>' +
             '</body>';
         try { window.stop(); } catch (e) {}
@@ -77,126 +74,116 @@
         /* Deriv app CSS is sized for a 10px root — required. */
         :root { font-size: 62.5%; }
 
-        /* ── HYPRLVX brand tokens ── */
+        /* ── Autotrades-style brand tokens ── */
         :root {
-            --hlx-purple: %%PRIMARY_COLOR%%;
-            --hlx-purple-hi: %%ACCENT_COLOR%%;
-            --hlx-purple-lo: %%PRIMARY_COLOR_DARK%%;
-            --hlx-glow: #8b5cf6;
+            --hlx-blue: %%PRIMARY_COLOR%%;
+            --hlx-blue-hi: %%ACCENT_COLOR%%;
+            --hlx-blue-lo: %%PRIMARY_COLOR_DARK%%;
+            --hlx-glow: #3b82f6;
             --hlx-bg: %%BACKGROUND_COLOR%%;
-            --hlx-ink: #e9e4f5;
+            --hlx-ink: #0f2a5a;
         }
 
         html, body {
             margin: 0; padding: 0;
             background: var(--hlx-bg);
             color: var(--hlx-ink);
-            font-family: %%FONT_FAMILY%%, system-ui, sans-serif;
+            font-family: %%FONT_FAMILY%%, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
         }
 
-        /* ── HYPRLVX THEME OVERRIDES ──────────────────────────────────────────
-           The build themes from /api/appwrite/site-settings (primaryColor / …).
-           These variable overrides re-skin the remaining Deriv design tokens the
-           settings JSON doesn't reach — the HYPRLVX purple/black palette. Loss /
-           danger stays red because red carries meaning (a loss), not brand. */
-        :root, .theme--dark, .theme--light, body {
+        /* ── Autotrades / Light Theme Token Overrides ── */
+        :root, .theme--light, body {
             --button-primary-default: %%PRIMARY_COLOR%%;
             --button-primary-hover: %%PRIMARY_COLOR_DARK%%;
-            --du-brand-red-coral: %%PRIMARY_COLOR%%;
+            --du-brand-red-coral: #ff444f;
             --du-button-primary-default: %%PRIMARY_COLOR%%;
             --du-button-primary-hover: %%PRIMARY_COLOR_DARK%%;
-            --du-button-primary-light-default: #723ec322;
-            --du-button-primary-light-hover: #723ec33a;
-            --du-button-tertiary-hover: #723ec31c;
+            --du-button-primary-light-default: #dfeaff;
+            --du-button-primary-light-hover: #bfdbfe;
+            --du-button-tertiary-hover: #eff6ff;
             --du-text-red: %%ACCENT_COLOR%%;
             --du-purchase-main-2: %%PRIMARY_COLOR%%;
             --du-purchase-section-2: %%PRIMARY_COLOR_DARK%%;
-            /* danger / loss keep a true red (semantic, not brand) */
+            /* semantic red for loss / danger */
             --du-status-danger: #ef4444;
             --du-transparent-danger: #ef444422;
-            /* Retint every Deriv blue to the HYPRLVX purple family */
+            /* Blue palette */
             --du-color-blue-1: %%PRIMARY_COLOR%%;
-            --du-color-blue-2: #8b5cf6;
-            --du-color-blue-3: #7c3aed;
-            --du-color-blue-4: #6d28d9;
-            --du-color-blue-5: #5b21b6;
-            --du-color-blue-6: #4c1d95;
-            --du-text-blue: %%ACCENT_COLOR%%;
-            --du-text-info: %%ACCENT_COLOR%%;
+            --du-color-blue-2: #2563eb;
+            --du-color-blue-3: #1d4ed8;
+            --du-color-blue-4: #1e40af;
+            --du-color-blue-5: #1e3a8a;
+            --du-color-blue-6: #0f2a5a;
+            --du-text-blue: %%PRIMARY_COLOR%%;
+            --du-text-info: %%PRIMARY_COLOR%%;
             --du-status-info: %%PRIMARY_COLOR%%;
-            --du-transparent-info: #723ec322;
+            --du-transparent-info: #dfeaff;
             --du-button-info-default: %%PRIMARY_COLOR%%;
-            --du-button-info-hover: #8b5cf6;
+            --du-button-info-hover: #2563eb;
             --core-color-solid-blue-1: %%PRIMARY_COLOR%%;
-            --core-color-solid-blue-2: #8b5cf6;
-            color-scheme: dark;
+            --core-color-solid-blue-2: #2563eb;
+            color-scheme: light;
         }
 
-        /* ── SINGLE BRAND LOCKUP ──────────────────────────────────────────────
-           Restyle the build's native header logo (React-owned, so pure CSS — no
-           JS injection to get reconciled away): cropped owl mark (logoUrl) +
-           a "HYPRLVX" wordmark, with the "powered by deriv" sub-mark removed. */
-        /* Hide the generated "powered by deriv" wordmark (a data: SVG). */
+        /* ── Header Branding Lockup (autotrades clean style) ── */
         .logo-holder img[src^="data:"] { display: none !important; }
-        /* The owl mark (uploaded logoUrl) — size + glow. */
         .logo-holder img:not([src^="data:"]) {
-            height: 42px !important; width: auto !important;
-            filter: drop-shadow(0 0 8px rgba(114,62,195,.6));
+            height: 38px !important; width: auto !important;
+            filter: drop-shadow(0 2px 5px rgba(15,42,90,.15));
             transition: transform .3s cubic-bezier(.16,1,.3,1), filter .3s;
         }
         .d-apollo-logo:hover .logo-holder img:not([src^="data:"]) {
-            transform: translateY(-1px) scale(1.05);
-            filter: drop-shadow(0 0 15px rgba(157,110,240,.95));
+            transform: translateY(-1px) scale(1.04);
+            filter: drop-shadow(0 4px 10px rgba(59,130,246,.3));
         }
         .logo-holder { display: flex !important; align-items: center; gap: 10px; }
         .logo-holder::after {
             content: "%%APP_NAME%%";
-            font-family: %%FONT_FAMILY%%, sans-serif; font-size: 2.6rem; letter-spacing: .03em; line-height: 1;
-            color: %%ACCENT_COLOR%%; white-space: nowrap;
-            text-shadow: 0 0 10px rgba(114,62,195,.7), 0 0 22px rgba(139,92,246,.4);
+            font-family: %%FONT_FAMILY%%, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: .01em;
+            line-height: 1;
+            color: #0f2a5a;
+            white-space: nowrap;
         }
 
-        /* ── LOADERS / SPINNERS → purple (D-Trader, charts, page loaders) ── */
+        /* ── Loaders & Spinners (Royal Blue) ── */
         .barspinner .rect, .dc-loading .rect, .initial-loader .rect,
-        [class*="barspinner"] [class*="rect"] { background-color: %%ACCENT_COLOR%% !important; }
+        [class*="barspinner"] [class*="rect"] { background-color: %%PRIMARY_COLOR%% !important; }
         [class*="loader"] svg circle[stroke]:not([stroke="none"]),
-        [class*="spinner"] svg circle[stroke]:not([stroke="none"]) { stroke: %%ACCENT_COLOR%% !important; }
-        .dc-loading, [class*="loading__"] path[fill]:not([fill="none"]) { color: %%ACCENT_COLOR%% !important; }
+        [class*="spinner"] svg circle[stroke]:not([stroke="none"]) { stroke: %%PRIMARY_COLOR%% !important; }
+        .dc-loading, [class*="loading__"] path[fill]:not([fill="none"]) { color: %%PRIMARY_COLOR%% !important; }
 
-        /* Analysis embed (api.binarytool.site) is cross-origin — its blue
-           "Analysistool" title can't be selected directly, so shift the embed's
-           hue toward the HYPRLVX purple. */
-        .iframe-switcher iframe, iframe[src*="binarytool"] { filter: hue-rotate(48deg) saturate(1.05); }
+        /* Clean embed */
+        .iframe-switcher iframe, iframe[src*="binarytool"] { filter: none !important; }
 
-        /* Tradingview / Trading-grid toggle buttons → theme purple (were hard blue) */
+        /* Chart active buttons */
         [class*="chart"] button[class*="active"], .smartcharts button.active { background: %%PRIMARY_COLOR%% !important; }
 
-        /* ── LIFE: shimmer, glow, hover, reflection ───────────────────────────
-           Purposeful motion (the site should feel alive). Everything degrades to
-           a static state under prefers-reduced-motion. */
-
-        /* smooth base transitions on interactive chrome */
+        /* Smooth UI transitions */
         .dc-btn, .auth-actions button, [role="tab"], .dc-tabs__item,
         .bot-card, [class*="bot-list__card"], [class*="quick-strategy"] [class*="card"] {
-            transition: transform .28s cubic-bezier(.16,1,.3,1),
-                        box-shadow .28s cubic-bezier(.16,1,.3,1),
-                        filter .28s cubic-bezier(.16,1,.3,1) !important;
+            transition: transform .25s ease, box-shadow .25s ease !important;
         }
 
-        /* primary buttons: lift + purple glow + a light sheen that sweeps across */
+        /* Primary buttons: clean blue with subtle shadow */
         .dc-btn--primary, .auth-actions__primary, button[class*="--primary"] {
             position: relative; overflow: hidden;
+            background-color: %%PRIMARY_COLOR%% !important;
+            border-radius: 6px;
         }
         .dc-btn--primary::after, .auth-actions__primary::after,
         button[class*="--primary"]::after {
             content: ""; position: absolute; inset: 0;
-            background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.28) 50%, transparent 70%);
+            background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.25) 50%, transparent 70%);
             transform: translateX(-120%); pointer-events: none;
         }
         .dc-btn--primary:hover, .auth-actions__primary:hover,
         button[class*="--primary"]:hover {
+            background-color: %%PRIMARY_COLOR_DARK%% !important;
             transform: translateY(-1px);
-            box-shadow: 0 6px 22px rgba(114,62,195,.45), 0 0 0 1px rgba(157,110,240,.35) inset;
+            box-shadow: 0 4px 14px rgba(59,130,246,.35);
         }
         .dc-btn--primary:hover::after, .auth-actions__primary:hover::after,
         button[class*="--primary"]:hover::after {
@@ -204,17 +191,14 @@
         }
         @keyframes hlx-sheen { to { transform: translateX(120%); } }
 
-        /* cards: lift + glow + a faint top reflection */
+        /* Cards: crisp elevation with subtle border */
         .bot-card:hover, [class*="bot-list__card"]:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 40px rgba(114,62,195,.28), 0 0 0 1px rgba(157,110,240,.25);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(15,42,90,.08);
         }
 
-        /* tabs: active/hover glow */
-        [role="tab"]:hover, .dc-tabs__item:hover { filter: drop-shadow(0 0 6px rgba(139,92,246,.5)); }
-
-        /* animated purple aura behind the header for depth */
-        @keyframes hlx-aura { 0%,100%{opacity:.5} 50%{opacity:.9} }
+        /* Tabs hover & active */
+        [role="tab"]:hover, .dc-tabs__item:hover { color: %%PRIMARY_COLOR%% !important; }
 
         @media (prefers-reduced-motion: reduce) {
             *, ::after, ::before { animation: none !important; transition: none !important; }
@@ -222,11 +206,11 @@
 
     </style>
 
-    <!-- HYPRLVX overlays — must run before the bundle opens sockets / patches fetch -->
+    <!-- Overlays -->
     <script defer src="/static/js/hlx-ws.js?v=20261006-5"></script>
     <script defer src="/static/js/hlx-bots.js"></script>
 
-    <!-- App build (deferred, executes in order) -->
+    <!-- App build -->
     <script defer src="/static/js/lib-react.7e3f0832.js"></script>
     <script defer src="/static/js/lib-router.13959373.js"></script>
     <script defer src="/static/js/160.abd80728.js"></script>
@@ -234,7 +218,7 @@
     <link href="/static/css/160.96116a77.css" rel="stylesheet">
     <link href="/static/css/index.9ed654a3.css" rel="stylesheet">
 
-    <!-- HYPRLVX UI overlay (branding, WhatsApp, theme fixes; runs after render) -->
+    <!-- UI overlay -->
     <script defer src="/static/js/hlx-ui.js"></script>
 </head>
 
