@@ -291,7 +291,14 @@ app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.t
 // Legacy HYPRLVX config endpoint (kept for any of our own overlays).
 app.get('/api/site-config', (req, res) => {
   jsonCors(res);
-  res.sendFile(path.join(__dirname, 'api', 'site-config.html'));
+  noCache(res);
+  const origin = req.protocol + '://' + req.get('host');
+  const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'api', 'site-config.html'), 'utf8'));
+  config.site = { ...(config.site || {}), domain: origin + '/' };
+  if (Array.isArray(config.appIds)) {
+    config.appIds = config.appIds.map(item => ({ ...item, redirect: origin + '/' }));
+  }
+  res.json(config);
 });
 
 // Featured bots (used by our own bot-library overlay).
