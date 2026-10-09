@@ -89,8 +89,8 @@ const HLX_SETTINGS = {
   loaderBackgroundColor: BRAND.backgroundColor,
   loaderStyle: 'orbit_terminal',
   botCardStyle: 'minimal',
-  listItemBackgroundGradient: `linear-gradient(135deg, #1a0f2e 0%, ${BRAND.primaryColor} 45%, ${BRAND.accentColor} 100%)`,
-  listItemHoverGradient: `linear-gradient(135deg, #241640 0%, ${BRAND.primaryColor} 55%, ${BRAND.accentColor} 100%)`,
+  listItemBackgroundGradient: `linear-gradient(135deg, #0f2a5a 0%, ${BRAND.primaryColor} 60%, ${BRAND.accentColor} 100%)`,
+  listItemHoverGradient: `linear-gradient(135deg, #1a3c60 0%, ${BRAND.primaryColor} 70%, ${BRAND.accentColor} 100%)`,
 
   // ── Referral / marketing ──
   referralUrl: BRAND.referralUrl,
@@ -139,7 +139,7 @@ const HLX_SITE = {
   secondaryColor: BRAND.secondaryColor,
   accentColor: BRAND.accentColor,
   backgroundColor: BRAND.backgroundColor,
-  textColor: '#e5e7eb',
+  textColor: '#0f2a5a',
   fontFamily: null,
   socialWhatsapp: 'https://whatsapp.com/channel/0029VbDmCLQ5a248r8IuF304',
   socialTelegram: 'https://t.me/globaltrading_hub1',
