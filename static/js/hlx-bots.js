@@ -113,7 +113,7 @@
         });
 
         var output = Object.assign({}, data, {
-          total: Math.max(Number(data.total) || 0, documents.length) + added,
+          total: Math.max((Number(data.total) || data.documents.length) + added, documents.length),
           documents: documents
         });
         return new Response(JSON.stringify(output), {
